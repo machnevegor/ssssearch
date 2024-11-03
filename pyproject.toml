@@ -1,0 +1,63 @@
+[tool.poetry]
+name = "context-explorer"
+version = "0.1.0"
+description = "LLM project"
+authors = ["Egor Machnev <egorikhelp@gmail.com>"]
+readme = "README.md"
+keywords = ["llm"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aiogram = "^3.12.0"
+python-dotenv = "^1.0.1"
+tqdm = "^4.66.5"
+jupyter = "^1.1.1"
+pandas = "^2.2.2"
+sentence-transformers = "^3.0.1"
+google-generativeai = "^0.8.1"
+nltk = "^3.9.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+exclude = [".mypy_cache", ".ruff_cache", ".venv", "venv", "build", "dist"]
+include = ["pyproject.toml", "**/*.py", "**/*.ipynb"]
+line-length = 128
+indent-width = 4
+target-version = "py311"
+fix = true
+
+[tool.ruff.format]
+preview = true
+
+[tool.ruff.lint]
+select = ["E", "F", "Q", "B", "I", "UP", "C"]
+ignore = []
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401"]
+"**/{tests,docs,tools}/*" = ["E402"]
+
+[tool.ruff.lint.flake8-bandit]
+check-typed-exception = true
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 130
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+force-single-line = false
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = []
+
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = []
