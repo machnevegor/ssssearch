@@ -6,7 +6,8 @@ from typing import Awaitable, Dict, Optional, Protocol, Set
 from tqdm.asyncio import tqdm
 from yarl import URL
 
-from src.utils.href import extract_hrefs, normalize_href
+from src.utils.href import normalize_href
+from src.utils.html import extract_hrefs
 
 from .fetcher import AbstractFetcher
 
