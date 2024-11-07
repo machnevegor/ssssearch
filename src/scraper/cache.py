@@ -68,7 +68,13 @@ class AbstractCache(ABC):
 
 
 class Cache(AbstractCache):
-    def __init__(self, path: str, *, loop: Optional[asyncio.AbstractEventLoop] = None):
+    def __init__(
+        self, path: str, *, loop: Optional[asyncio.AbstractEventLoop] = None
+    ) -> None:
+        """
+        :param path: Path to store the cache.
+        :param loop: Asynchronous event loop.
+        """
         self._path = path
 
         self._loop = loop or asyncio.get_event_loop()
