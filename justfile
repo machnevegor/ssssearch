@@ -1,13 +1,22 @@
 default:
-    just --list
+    @just --list
 
-setup:
+install:
     poetry install
 
-tidy path=".":
+fmt path=".":
+    @echo "Formatting code in {{ path }}..."
     poetry run isort {{ path }}
     poetry run ruff format {{ path }}
-    just --fmt --unstable
 
-check:
-    poetry run ruff check
+lint path=".":
+    @echo "Linting code in {{ path }}..."
+    poetry run ruff check {{ path }}
+
+run path="main.py":
+    @echo "Running {{ path }}..."
+    poetry run python {{ path }}
+
+check path=".":
+    just lint path={{ path }}
+    just fmt path={{ path }}
