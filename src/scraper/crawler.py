@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Awaitable, Dict, Optional, Protocol, Set
+from typing import Awaitable, Dict, Literal, Optional, Protocol, Set, Union
 
 from tqdm.asyncio import tqdm
 from yarl import URL
@@ -96,14 +96,16 @@ class Crawler(AbstractCrawler):
         if page is None:
             return
 
-        coros = []
-        for href in extract_hrefs(page.decode()):
-            if _should_crawl_page(href, self._host):
-                href = normalize_href(href, url)
-                if href not in self._pool:
-                    coros.append(self(href))
+        hrefs = set(
+            normalize_href(href, url)
+            for href in extract_hrefs(page.decode())
+            if _should_crawl_page(href, self._host)
+        )
 
-        await asyncio.gather(*coros)
+        # Spawn asynchronous tasks for each URL.
+        coros = [self(href) for href in hrefs if href not in self._pool]
+        if coros:
+            await asyncio.gather(*coros)
 
 
 def _should_crawl_page(href: URL, host: Optional[str]) -> bool:
