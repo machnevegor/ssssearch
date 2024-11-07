@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Awaitable, Dict, Literal, Optional, Protocol, Set, Union
+from typing import Awaitable, Dict, Optional, Set
 
 from tqdm.asyncio import tqdm
 from yarl import URL
@@ -9,25 +9,15 @@ from yarl import URL
 from src.utils.href import normalize_href
 from src.utils.html import extract_hrefs
 
-from .fetcher import AbstractFetcher
+from .fetcher import Fetcher
 
-__all__ = ("AbstractCrawler", "Crawler")
-
-
-class AbstractCrawler(Protocol):
-    def __call__(self, url: URL) -> Awaitable[None]:
-        """
-        Crawl page at specified URL.
-
-        :param url: URL of the page.
-        """
-        ...
+__all__ = ("Crawler",)
 
 
-class Crawler(AbstractCrawler):
+class Crawler:
     def __init__(
         self,
-        fetcher: AbstractFetcher,
+        fetcher: Fetcher,
         *,
         host: Optional[str] = None,
         loop: Optional[asyncio.AbstractEventLoop] = None,
@@ -88,10 +78,10 @@ class Crawler(AbstractCrawler):
         """
         page = await self._fetcher(url)
 
+        self._done.add(url)
+
         if self._pbar is not None:
             self._pbar.update(1)
-
-        self._done.add(url)
 
         if page is None:
             return

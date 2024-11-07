@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from contextlib import suppress
 from datetime import datetime, timedelta, timezone
-from typing import Optional, Protocol
+from typing import Optional
 
 import aiohttp
 from yarl import URL
@@ -14,21 +14,10 @@ from src.utils.hash import generate_sha
 from .cache import AbstractCache
 from .types import PageMeta
 
-__all__ = ("AbstractFetcher", "Fetcher")
+__all__ = ("Fetcher",)
 
 
-class AbstractFetcher(Protocol):
-    async def __call__(self, url: URL) -> Optional[bytes]:
-        """
-        Fetch page at specified URL.
-
-        :param url: URL of the page.
-        :return: Page content if page exists; None otherwise.
-        """
-        ...
-
-
-class Fetcher(AbstractFetcher):
+class Fetcher:
     def __init__(
         self,
         session: aiohttp.ClientSession,
