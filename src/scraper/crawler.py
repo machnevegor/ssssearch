@@ -35,6 +35,7 @@ class Crawler:
         self._loop = loop or asyncio.get_event_loop()
         self._pbar = pbar
 
+        # URL -> Task
         self._pool: Dict[URL, asyncio.Task[None]] = {}
         self._done: Set[URL] = set()
 
@@ -88,7 +89,7 @@ class Crawler:
 
         hrefs = set(
             normalize_href(href, url)
-            for href in extract_hrefs(page.decode())
+            for href in extract_hrefs(page)
             if _should_crawl_page(href, self._host)
         )
 

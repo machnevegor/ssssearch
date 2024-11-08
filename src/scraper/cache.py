@@ -38,7 +38,7 @@ class AbstractCache(ABC):
         pass
 
     @abstractmethod
-    async def set_page(self, url: URL, page: bytes) -> None:
+    async def set_page(self, url: URL, page: str) -> None:
         """
         Set page content for specified URL.
 
@@ -48,7 +48,7 @@ class AbstractCache(ABC):
         pass
 
     @abstractmethod
-    async def get_page(self, url: URL) -> bytes:
+    async def get_page(self, url: URL) -> str:
         """
         Get page content for specified URL.
 
@@ -90,8 +90,7 @@ class Cache(AbstractCache):
         :param meta: Page metadata.
         """
         filename = self._generate_filename(url, ".json")
-        async with aiofiles.open(filename, "w", loop=self._loop) as file:
-            await file.write(meta.serialize())
+        await self._write_file(filename, meta.serialize())
 
     async def get_meta(self, url: URL) -> Optional[PageMeta]:
         """
@@ -102,12 +101,11 @@ class Cache(AbstractCache):
         """
         filename = self._generate_filename(url, ".json")
         try:
-            async with aiofiles.open(filename, "r", loop=self._loop) as file:
-                return PageMeta.parse(await file.read())
+            return PageMeta.parse(await self._read_file(filename))
         except FileNotFoundError:
             return None
 
-    async def set_page(self, url: URL, page: bytes) -> None:
+    async def set_page(self, url: URL, page: str) -> None:
         """
         Set page content for specified URL.
 
@@ -115,10 +113,9 @@ class Cache(AbstractCache):
         :param page: Page content.
         """
         filename = self._generate_filename(url, ".bin")
-        async with aiofiles.open(filename, "wb", loop=self._loop) as file:
-            await file.write(page)
+        await self._write_file(filename, page)
 
-    async def get_page(self, url: URL) -> bytes:
+    async def get_page(self, url: URL) -> str:
         """
         Get page content for specified URL.
 
@@ -126,8 +123,7 @@ class Cache(AbstractCache):
         :return: Page content.
         """
         filename = self._generate_filename(url, ".bin")
-        async with aiofiles.open(filename, "rb", loop=self._loop) as file:
-            return await file.read()
+        return await self._read_file(filename)
 
     async def delele_page(self, url: URL) -> None:
         """
@@ -146,3 +142,23 @@ class Cache(AbstractCache):
         :param ext: File extension.
         """
         return os.path.join(self._path, generate_sha(url.human_repr()) + ext)
+
+    async def _write_file(self, filename: str, data: str) -> None:
+        """
+        Write data asynchronously to a file.
+
+        :param filename: Path to the file.
+        :param data: File content.
+        """
+        async with aiofiles.open(filename, "w", loop=self._loop) as file:
+            await file.write(data)
+
+    async def _read_file(self, filename: str) -> str:
+        """
+        Read data asynchronously from a file.
+
+        :param filename: Path to the file.
+        :return: File content.
+        """
+        async with aiofiles.open(filename, "r", loop=self._loop) as file:
+            return await file.read()

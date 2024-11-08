@@ -47,7 +47,7 @@ class Fetcher:
             self._cache_map = cache_map
             self._cache_ttl = cache_ttl
 
-    async def __call__(self, url: URL) -> Optional[bytes]:
+    async def __call__(self, url: URL) -> Optional[str]:
         """
         Fetch page at specified URL. Cache if enabled.
 
@@ -67,7 +67,7 @@ class Fetcher:
 
         return await self._cache_map.get_page(url)
 
-    async def _fetch_page(self, url: URL) -> Optional[bytes]:
+    async def _fetch_page(self, url: URL) -> Optional[str]:
         """
         Fetch URL and return the page content.
 
@@ -77,11 +77,11 @@ class Fetcher:
         with suppress(asyncio.TimeoutError):
             async with self._session.get(url, timeout=self._timeout) as res:
                 if _should_continue_fetching(res):
-                    return await res.read()
+                    return await res.text()
 
     async def _cache_page(
         self, url: URL, last_meta: Optional[PageMeta]
-    ) -> Optional[bytes]:
+    ) -> Optional[str]:
         """
         Fetch URL and cache the result.
 
@@ -91,7 +91,7 @@ class Fetcher:
         """
         page = await self._fetch_page(url)
 
-        sha = generate_sha(page) if page else None
+        sha = None if page is None else generate_sha(page)
         now = datetime.now(timezone.utc)
 
         next_meta = PageMeta(
@@ -108,7 +108,7 @@ class Fetcher:
     async def _store_page(
         self,
         url: URL,
-        page: Optional[bytes],
+        page: Optional[str],
         last_meta: Optional[PageMeta],
         next_meta: PageMeta,
     ) -> None:
