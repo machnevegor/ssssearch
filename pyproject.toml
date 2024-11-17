@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "context-explorer"
+name = "ssssearch"
 version = "0.1.0"
-description = "LLM project"
+description = "Static Site Semantic Search"
 authors = ["Egor Machnev <egorikhelp@gmail.com>"]
 readme = "README.md"
-keywords = ["llm"]
+keywords = ["semantic-search", "nlp", "faiss", "llm", "search"]
 package-mode = false
 
 [tool.poetry.dependencies]
