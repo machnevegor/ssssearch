@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Tuple
+from typing import Sequence, Tuple
 
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
@@ -11,13 +11,13 @@ __all__ = ("Chunker",)
 class Chunker:
     def __init__(
         self,
-        sentences: List[Tuple[str, np.ndarray]],
+        sentences: Sequence[Tuple[str, np.ndarray]],
         *,
         dimension: int,
         threshold: float,
     ) -> None:
         """
-        :param sentences: List of token-embedding pairs.
+        :param sentences: Sequence of token-embedding pairs.
         :param dimension: Embedding dimension.
         :param threshold: Similarity threshold.
         """
