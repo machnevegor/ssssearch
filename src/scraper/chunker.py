@@ -11,17 +11,17 @@ __all__ = ("Chunker",)
 class Chunker:
     def __init__(
         self,
-        sentences: Sequence[Tuple[str, np.ndarray]],
+        pairs: Sequence[Tuple[str, np.ndarray]],
         *,
         dimension: int,
         threshold: float,
     ) -> None:
         """
-        :param sentences: Sequence of token-embedding pairs.
+        :param pairs: Sequence of token-embedding pairs.
         :param dimension: Embedding dimension.
         :param threshold: Similarity threshold.
         """
-        self._sentences = sentences
+        self._pairs = pairs
 
         self._dimension = dimension
         self._threshold = threshold
@@ -32,15 +32,20 @@ class Chunker:
         return self
 
     def __next__(self) -> Tuple[str, np.ndarray]:
-        if self._cursor >= len(self._sentences):
+        """
+        Aggregate tokens into chunks based on similarity threshold.
+
+        :return: Chunk of tokens and its cumulative embedding.
+        """
+        if self._cursor >= len(self._pairs):
             raise StopIteration
 
         chunk = []
         cumulative_embedding = np.zeros(self._dimension)
         count = 0
 
-        while self._cursor < len(self._sentences):
-            token, embedding = self._sentences[self._cursor]
+        while self._cursor < len(self._pairs):
+            token, embedding = self._pairs[self._cursor]
 
             if count and self._should_close_chunk(
                 embedding, cumulative_embedding, count

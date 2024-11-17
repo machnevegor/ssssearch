@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 from faiss import IndexFlatL2
@@ -9,8 +8,6 @@ from sentence_transformers import SentenceTransformer
 from yarl import URL
 
 from .chunker import Chunker
-
-__all__ = ("Indexer",)
 
 
 class Indexer:
@@ -28,49 +25,49 @@ class Indexer:
         self._threshold = threshold
 
         self._index = IndexFlatL2(self._dimension)
-        self._documents: List[Tuple[URL, str]] = []
+        self._table: List[URL] = []
 
-    def add(self, url: URL, tokens: List[str]) -> None:
+        self._pages: Dict[URL, str] = {}
+
+    def append(self, url: URL, page: str, tokens: List[str]) -> None:
         """
-        Add page tokens to index.
+        Append a page to the index.
 
-        :param url: Page URL.
-        :param tokens: Page tokens.
+        :param url: URL of the page.
+        :param page: Content of the page.
+        :param tokens: List of tokens.
         """
         embeddings = self._embed_tokens(tokens)
+        pairs = list(zip(tokens, embeddings))
 
-        chunker = Chunker(
-            list(zip(tokens, embeddings)),
-            dimension=self._dimension,
-            threshold=self._threshold,
-        )
+        chunker = Chunker(pairs, dimension=self._dimension, threshold=self._threshold)
 
-        for paragraph, embedding in chunker:
-            self._index.add(embedding.reshape(1, -1))  # type: ignore
-            self._documents.append((url, paragraph))
+        for _, embedding in chunker:
+            self._index.add(embedding)  # type: ignore
+            self._table.append(url)
+
+        self._pages[url] = page
 
     def search(self, query: str, k: int) -> List[Tuple[URL, str]]:
         """
-        Search for similar documents.
+        Search for similar pages based on the query.
 
         :param query: Query string.
-        :param k: Top-k documents.
-        :return: Similar documents.
+        :param k: Top-k matches.
+        :return: List of URLs and their corresponding pages.
         """
         embeddings = self._embed_tokens([query])
 
-        _, indices = self._index.search(embeddings.reshape(1, -1), k)  # type: ignore
+        _, indices = self._index.search(embeddings, k)  # type: ignore
+        urls = set(self._table[i] for i in indices[0])
 
-        return [self._documents[i] for i in indices[0]]
+        return [(url, self._pages[url]) for url in urls]
 
     def _embed_tokens(self, tokens: List[str]) -> np.ndarray:
         """
-        Embed tokens.
+        Embed tokens using the sentence transformer model.
 
-        :param tokens: Tokens.
-        :return: Embeddings.
+        :param tokens: List of tokens.
+        :return: Array of embeddings.
         """
-        with ThreadPoolExecutor() as executor:
-            embeddings = list(executor.map(self._model.encode, tokens))
-
-        return np.array(embeddings, dtype=np.float32)
+        return self._model.encode(tokens)
