@@ -5,6 +5,7 @@ from os import getenv
 
 import google.generativeai as genai
 from aiogram import BaseMiddleware, Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
@@ -116,7 +117,7 @@ async def setup(bot: Bot, admin: str) -> None:
 
 
 async def main(token: str, admin: str) -> None:
-    bot = Bot(token)
+    bot = Bot(token=token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
     await setup(bot, admin)
     await dp.start_polling(bot)
