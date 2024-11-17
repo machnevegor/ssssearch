@@ -25,7 +25,7 @@ class Indexer:
         self._threshold = threshold
 
         self._index = IndexFlatL2(self._dimension)
-        self._table: List[URL] = []
+        self._table: List[URL] = []  # Lookup table for URLs
 
         self._pages: Dict[URL, str] = {}
 
@@ -43,7 +43,7 @@ class Indexer:
         chunker = Chunker(pairs, dimension=self._dimension, threshold=self._threshold)
 
         for _, embedding in chunker:
-            self._index.add(embedding)  # type: ignore
+            self._index.add(embedding.reshape(1, -1))  # type: ignore
             self._table.append(url)
 
         self._pages[url] = page
@@ -58,7 +58,7 @@ class Indexer:
         """
         embeddings = self._embed_tokens([query])
 
-        _, indices = self._index.search(embeddings, k)  # type: ignore
+        _, indices = self._index.search(embeddings.reshape(1, -1), k)  # type: ignore
         urls = set(self._table[i] for i in indices[0])
 
         return [(url, self._pages[url]) for url in urls]
