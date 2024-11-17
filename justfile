@@ -4,6 +4,9 @@ default:
 install:
     poetry install
 
+lock:
+    poetry lock
+
 fmt path=".":
     @echo "Formatting code in {{ path }}..."
     poetry run isort {{ path }}
