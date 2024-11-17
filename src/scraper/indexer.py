@@ -59,7 +59,7 @@ class Indexer:
         embeddings = self._embed_tokens([query])
 
         _, indices = self._index.search(embeddings.reshape(1, -1), k)  # type: ignore
-        urls = set(self._table[i] for i in indices[0])
+        urls = set(self._table[i] for i in indices[0] if i != -1)
 
         return [(url, self._pages[url]) for url in urls]
 
