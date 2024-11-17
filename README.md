@@ -19,29 +19,29 @@ meaningful answers from domain-specific knowledge bases.
 
 ### Universal Web Scraper
 
-- **Configurable Root URL****: Adapt the bot for any website by updating the
-  root URL in the configuration.
-- **Recursive Crawling****: Automatically traverses all pages linked within the
+- **Configurable Root URL**: Adapt the bot for any website by updating the root
+  URL in the configuration.
+- **Recursive Crawling**: Automatically traverses all pages linked within the
   domain, ensuring thorough coverage.
-- **Full Indexing****: Collects and structures all text-based content from the
+- **Full Indexing**: Collects and structures all text-based content from the
   target website for optimal searchability.
-- **Progress Monitoring****: Displays a real-time progress bar during the
-  scraping process.
+- **Progress Monitoring**: Displays a real-time progress bar during the scraping
+  process.
 
 ### AI-Powered Semantic Search
 
-- **Natural Language Understanding****: Supports semantic query resolution for
+- **Natural Language Understanding**: Supports semantic query resolution for
   user-friendly and accurate responses.
-- **AI Model****: Utilizes Google’s Gemini model to analyze user queries and
+- **AI Model**: Utilizes Google’s Gemini model to analyze user queries and
   deliver concise answers.
-- **Source References****: Cites original content sources to enhance reliability
+- **Source References**: Cites original content sources to enhance reliability
   and transparency.
 
 ### Telegram Bot Integration
 
-- **Seamless Interaction****: Users can query the bot using natural language and
+- **Seamless Interaction**: Users can query the bot using natural language and
   receive immediate, AI-generated responses.
-- **Admin Notifications****: Alerts the admin once the scraping and indexing
+- **Admin Notifications**: Alerts the admin once the scraping and indexing
   process is complete, indicating the bot is ready for queries.
 
 ## Usage
